@@ -1,0 +1,34 @@
+heat_template_version: 2014-10-16
+
+description: Simple template to deploy kuryr resources
+
+parameters:
+    image:
+        type: string
+        label: Image name or ID
+        description: Image to be used for the kuryr nodes
+        default:
+    flavor:
+        type: string
+        label: Flavor
+        description: Flavor to be used for the image
+        default: m1.small
+    key:
+        type: string
+        label: key name
+        description: Keypair to be used for the instance
+
+resources:
+    master_node:
+        type: OS::Nova::Server
+        properties:
+            image: { get_param: image }
+            flavor: { get_param: flavor }
+            key_name: { get_param: key }
+            networks:
+                - network: private-net
+
+outputs:
+    instance_ip:
+        description: IP address of the instance
+        value: { get_attr: [my_instance, first_address] }
