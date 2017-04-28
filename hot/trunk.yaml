@@ -1,0 +1,27 @@
+heat_template_version: 2014-10-16
+
+description: Template to create ports to be parent trunk ports
+
+parameters:
+  network:
+    type: string
+    label: VM Network
+    description: Neutron network for VMs
+  subnet:
+    type: string
+    label: VM Subnet
+    description: Neutron subnet for VMs
+
+resources:
+  trunk_port:
+    type: OS::Neutron::Port
+    properties:
+      network: { get_param: network }
+      security_groups:
+        - default
+      fixed_ips:
+        - subnet: { get_param: subnet }
+
+outputs:
+  trunk_port_id:
+      value: { get_resource: trunk_port }

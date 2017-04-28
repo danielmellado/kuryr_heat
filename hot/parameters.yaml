@@ -1,0 +1,19 @@
+parameters:
+  image: cirros-0.3.5-x86_64-disk
+  flavor: m1.medium
+  key: demo
+  public_net: public
+  vm_net_cidr: 10.0.10.0/24
+  vm_net_gateway: 10.0.10.1
+  pod_net_cidr: 10.0.20.0/24
+  pod_net_gateway: 10.0.20.1
+  service_net_cidr: 172.30.0.0/16
+  service_net_gateway: 172.30.255.254
+  service_router_port_ip: 172.30.255.254
+  master_num: 1
+  worker_num: 2
+
+resource_registry:
+  resources:
+    worker_nodes:
+      hooks: pre-create
