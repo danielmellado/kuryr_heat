@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e1cb7844_fe91bfdf",
+        "filename": "hot/kuryr_heat_template.yml",
+        "patchSetId": 2
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1002755
+      },
+      "writtenOn": "2017-04-28T08:36:55Z",
+      "side": 1,
+      "message": "I started with 4 spaces, I\u0027m fine switching to two, but let\u0027s make this consistent in all the yaml files",
+      "range": {
+        "startLine": 6,
+        "startChar": 0,
+        "endLine": 10,
+        "endChar": 8
+      },
+      "revId": "9249e2824a8d3604264f6bcfae7e6e983748773a",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8df096b0_909495fc",
+        "filename": "hot/kuryr_heat_template.yml",
+        "patchSetId": 2
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1002755
+      },
+      "writtenOn": "2017-04-28T08:36:55Z",
+      "side": 1,
+      "message": "We should use parameters for this in order to make it general. I\u0027ll amend a patch to your in order to enable it.",
+      "range": {
+        "startLine": 31,
+        "startChar": 0,
+        "endLine": 32,
+        "endChar": 30
+      },
+      "revId": "9249e2824a8d3604264f6bcfae7e6e983748773a",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b201d1d4_1e7b5b3a",
+        "filename": "hot/kuryr_heat_template.yml",
+        "patchSetId": 2
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1002755
+      },
+      "writtenOn": "2017-04-28T08:36:55Z",
+      "side": 1,
+      "message": "ditto",
+      "range": {
+        "startLine": 43,
+        "startChar": 0,
+        "endLine": 44,
+        "endChar": 27
+      },
+      "revId": "9249e2824a8d3604264f6bcfae7e6e983748773a",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "67c3b562_ccf1f807",
+        "filename": "hot/kuryr_heat_template.yml",
+        "patchSetId": 2
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1002755
+      },
+      "writtenOn": "2017-04-28T08:36:55Z",
+      "side": 1,
+      "message": "ditto",
+      "range": {
+        "startLine": 55,
+        "startChar": 0,
+        "endLine": 56,
+        "endChar": 32
+      },
+      "revId": "9249e2824a8d3604264f6bcfae7e6e983748773a",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e37ba15f_693f7fd1",
+        "filename": "hot/kuryr_heat_template.yml",
+        "patchSetId": 2
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1002755
+      },
+      "writtenOn": "2017-04-28T08:36:55Z",
+      "side": 1,
+      "message": "TODO: On ports, if we\u0027re aiming to support Newton+ yeah, as in the TODO from the commit message we should do the heat-pause trick in order to enable trunk ports.",
+      "range": {
+        "startLine": 114,
+        "startChar": 0,
+        "endLine": 121,
+        "endChar": 45
+      },
+      "revId": "9249e2824a8d3604264f6bcfae7e6e983748773a",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    }
+  ]
+}
