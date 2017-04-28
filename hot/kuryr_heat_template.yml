@@ -3,32 +3,88 @@ heat_template_version: 2014-10-16
 description: Simple template to deploy kuryr resources
 
 parameters:
-    image:
-        type: string
-        label: Image name or ID
-        description: Image to be used for the kuryr nodes
-        default:
-    flavor:
-        type: string
-        label: Flavor
-        description: Flavor to be used for the image
-        default: m1.small
-    key:
-        type: string
-        label: key name
-        description: Keypair to be used for the instance
+  image:
+    type: string
+    label: Image name or ID
+    description: Image to be used for the kuryr nodes
+    default:
+  flavor:
+    type: string
+    label: Flavor
+    description: Flavor to be used for the image
+    default: m1.small
+  key:
+    type: string
+    label: key name
+    description: Keypair to be used for the instance
+  public_net:
+    type: string
+    description: public network for the instances
+    default: public
+  vm_net_cidr:
+    type: string
+    description: vm_net network address (CIDR notation)
+  vm_net_gateway:
+    type: string
+    description: vm_net network gateway address
+  pod_net_cidr:
+    type: string
+    description: pod_net network address (CIDR notation)
+  pod_net_gateway:
+    type: string
+    description: pod_net network gateway address
+  service_net_cidr:
+    type: string
+    description: service_net network address (CIDR notation)
+  service_net_gateway:
+    type: string
+    description: service_net network gateway address
+  service_router_port_ip:
+    type: string
+    description: IP for service router port
+    default: 172.30.255.254
 
 resources:
-    master_node:
-        type: OS::Nova::Server
+  networking:
+    type: OS::Heat::ResourceGroup
+    properties:
+      count: 1
+      resource_def:
+        type: networking_deployment.yml
         properties:
-            image: { get_param: image }
-            flavor: { get_param: flavor }
-            key_name: { get_param: key }
-            networks:
-                - network: private-net
+          public_net: { get_param: public_net }
+          vm_net_cidr: { get_param: vm_net_cidr }
+          vm_net_gateway: { get_param: vm_net_gateway }
+          pod_net_cidr: { get_param: pod_net_cidr }
+          pod_net_gateway: { get_param: pod_net_gateway }
+          service_net_cidr: { get_param: service_net_cidr }
+          service_net_gateway: { get_param: service_net_gateway }
+          service_router_port_ip: { get_param: service_router_port_ip }
 
-outputs:
-    instance_ip:
-        description: IP address of the instance
-        value: { get_attr: [my_instance, first_address] }
+  master_nodes:
+    type: OS::Heat::ResourceGroup
+    properties:
+      count: 1
+      resource_def:
+        type: master_node.yml
+        properties:
+          public_net: { get_param: public_net }
+          image: { get_param: image }
+          flavor: { get_param: flavor }
+          key: { get_param: key
+          vm_net: { get_resource: vm_net }
+          vm_subnet: { get_resource: vm_subnet }
+
+  worker_nodes:
+    type: OS::Heat::ResourceGroup
+    properties:
+      count: 2
+      resource_def:
+        type: worker_node.yml
+        properties:
+          public_net: { get_param: public_net }
+          image: { get_param: image }
+          flavor: { get_param: flavor }
+          key: { get_param: key
+          vm_net: { get_resource: vm_net }
+          vm_subnet: { get_resource: vm_subnet }
