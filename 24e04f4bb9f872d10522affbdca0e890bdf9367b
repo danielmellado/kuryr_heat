@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "bbb1c346_1cadc46d",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1010914
+      },
+      "writtenOn": "2017-04-28T09:39:51Z",
+      "side": 1,
+      "message": "Ok, not sure why we need to support Newton+. We can discuss it next week!",
+      "parentUuid": "e74abb77_bd2f6f1f",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 10,
+        "endChar": 30
+      },
+      "revId": "24e04f4bb9f872d10522affbdca0e890bdf9367b",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "12297379_c053ee01",
         "filename": "hot/kuryr_heat_template.yml",
         "patchSetId": 3
@@ -84,6 +108,30 @@
       "side": 1,
       "message": "I\u0027d say that we would need to have a default, just need to agree on one :D I left this empty for the time being as I\u0027m not really sure on which one we\u0027ll be using for it.",
       "parentUuid": "12297379_c053ee01",
+      "range": {
+        "startLine": 10,
+        "startChar": 0,
+        "endLine": 10,
+        "endChar": 12
+      },
+      "revId": "24e04f4bb9f872d10522affbdca0e890bdf9367b",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "393f4b47_c4d7daf4",
+        "filename": "hot/kuryr_heat_template.yml",
+        "patchSetId": 3
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1010914
+      },
+      "writtenOn": "2017-04-28T09:39:51Z",
+      "side": 1,
+      "message": "ok, I guess default one could be centos7.3",
+      "parentUuid": "cab2a28c_06179619",
       "range": {
         "startLine": 10,
         "startChar": 0,
