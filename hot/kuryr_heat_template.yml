@@ -3,32 +3,173 @@ heat_template_version: 2014-10-16
 description: Simple template to deploy kuryr resources
 
 parameters:
-    image:
-        type: string
-        label: Image name or ID
-        description: Image to be used for the kuryr nodes
-        default:
-    flavor:
-        type: string
-        label: Flavor
-        description: Flavor to be used for the image
-        default: m1.small
-    key:
-        type: string
-        label: key name
-        description: Keypair to be used for the instance
+  image:
+    type: string
+    label: Image name or ID
+    description: Image to be used for the kuryr nodes
+    default:
+  flavor:
+    type: string
+    label: Flavor
+    description: Flavor to be used for the image
+    default: m1.small
+  key:
+    type: string
+    label: key name
+    description: Keypair to be used for the instance
+  vm_net_cidr:
+    type: string
+    description: vm_net network address (CIDR notation)
+  vm_net_gateway:
+    type: string
+    description: vm_net network gateway address
+  pod_net_cidr:
+    type: string
+    description: pod_net network address (CIDR notation)
+  pod_net_gateway:
+    type: string
+    description: pod_net network gateway address
+  service_net_cidr:
+    type: string
+    description: service_net network address (CIDR notation)
+  service_net_gateway:
+    type: string
+    description: service_net network gateway address
 
 resources:
-    master_node:
-        type: OS::Nova::Server
+  vm_net:
+    type: OS::Neutron::Net
+    properties:
+      name: vm_net
+
+  vm_subnet:
+    type: OS::Neutron::Subnet
+    properties:
+      network_id: { get_resource: vm_net }
+      cidr: { get_param: vm_net_cidr }
+      gateway_ip: { get_param: vm_net_gateway }
+
+  pod_net:
+    type: OS::Neutron::Net
+    properties:
+      name: pod_net
+
+  pod_subnet:
+    type: OS::Neutron::Subnet
+    properties:
+      network_id: { get_resource: pod_net }
+      cidr: { get_param: pod_net_cidr }
+      gateway_ip: { get_param: pod_net_gateway }
+
+  service_net:
+    type: OS::Neutron::Net
+    properties:
+      name: service_net
+
+  service_subnet:
+    type: OS::Neutron::Subnet
+    properties:
+      network_id: { get_resource: service_net }
+      cidr: { get_param: service_net_cidr }
+      gateway_ip: { get_param: service_net_gateway }
+
+  kuryr_router:
+    type: OS::Neutron::Router
+    properties:
+      external_gateway_info:
+        network: { get_param: public_net }
+
+  kr_vm_iface:
+    type: OS::Neutron::RouterInterface
+    properties:
+      router_id: { get_resource: kuryr_router }
+      subnet_id: { get_resource: vm_subnet }
+
+  kr_pod_iface:
+    type: OS::Neutron::RouterInterface
+    properties:
+      router_id: { get_resource: kuryr_router }
+      subnet_id: { get_resource: pod_subnet }
+
+  service_router_port:
+      type: OS::Neutron::Port
+      properties:
+        network: { get_resource: service_net}
+        fixed_ips:
+          - subnet: { get_resource: service_subnet }
+            ip_address: 172.30.255.254
+        name: service-router-port
+
+  kr_service_iface:
+    type: OS::Neutron::RouterInterface
+    properties:
+      router_id: { get_resource: kuryr_router }
+      port: { get_resource: service_router_port }
+
+  master_port:
+    type: OS::Neutron::Port
+    properties:
+      network: { get_resource: vm_net }
+      security_groups:
+        - default
+      fixed_ips:
+        - subnet: { get_resource: vm_subnet }
+
+  master_fip:
+    type: OS::Neutron::FloatingIP
+    floating_network: { get_param: public_net }
+    port_id: { get_resource: master_port }
+
+  master_node:
+    type: OS::Nova::Server
+    properties:
+      image: { get_param: image }
+      flavor: { get_param: flavor }
+      key_name: { get_param: key }
+      networks:
+        - port: { get_resource: master_port }
+
+  master_port:
+    type: OS::Neutron::Port
+    properties:
+      network: { get_resource: vm_net }
+      security_groups:
+        - default
+      fixed_ips:
+        - subnet: { get_resource: vm_subnet }
+
+  master_fip:
+    type: OS::Neutron::FloatingIP
+    floating_network: { get_param: public_net }
+    port_id: { get_resource: master_port }
+
+  master_node:
+    type: OS::Nova::Server
+    properties:
+      image: { get_param: image }
+      flavor: { get_param: flavor }
+      key_name: { get_param: key }
+      networks:
+        - port: { get_resource: master_port }
+
+  worker_nodes:
+    type: OS::Heat::ResourceGroup
+    properties:
+      count: 2
+      resource_def:
+        type: worker_node.yml
         properties:
-            image: { get_param: image }
-            flavor: { get_param: flavor }
-            key_name: { get_param: key }
-            networks:
-                - network: private-net
+          public_net: { get_param: public_net }
+          image: { get_param: image }
+          flavor: { get_param: flavor }
+          key: { get_param: key
+          vm_net: { get_resource: vm_net }
+          vm_subnet: { get_resource: vm_subnet }
+
 
 outputs:
-    instance_ip:
-        description: IP address of the instance
-        value: { get_attr: [my_instance, first_address] }
+  master_fip:
+    description: FIP address of the master node
+    value: { get_attr: [master_fip, floating_ip_address] }
+  worker_node_fips:
+    value: { get_attr: [worker_nodes, instance_fip] }
