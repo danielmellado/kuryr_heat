@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "e74abb77_bd2f6f1f",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1002755
+      },
+      "writtenOn": "2017-04-28T09:17:34Z",
+      "side": 1,
+      "message": "Sadly, if we\u0027re supposed to support Newton+ then that won\u0027t be available.",
+      "parentUuid": "6833bb76_b92b1ffd",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 10,
+        "endChar": 30
+      },
+      "revId": "24e04f4bb9f872d10522affbdca0e890bdf9367b",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "12297379_c053ee01",
         "filename": "hot/kuryr_heat_template.yml",
         "patchSetId": 3
@@ -36,6 +60,30 @@
       "writtenOn": "2017-04-28T09:14:13Z",
       "side": 1,
       "message": "remove?",
+      "range": {
+        "startLine": 10,
+        "startChar": 0,
+        "endLine": 10,
+        "endChar": 12
+      },
+      "revId": "24e04f4bb9f872d10522affbdca0e890bdf9367b",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "cab2a28c_06179619",
+        "filename": "hot/kuryr_heat_template.yml",
+        "patchSetId": 3
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1002755
+      },
+      "writtenOn": "2017-04-28T09:17:34Z",
+      "side": 1,
+      "message": "I\u0027d say that we would need to have a default, just need to agree on one :D I left this empty for the time being as I\u0027m not really sure on which one we\u0027ll be using for it.",
+      "parentUuid": "12297379_c053ee01",
       "range": {
         "startLine": 10,
         "startChar": 0,
@@ -140,6 +188,30 @@
     },
     {
       "key": {
+        "uuid": "01070749_86de4002",
+        "filename": "hot/worker_node.yml",
+        "patchSetId": 3
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1002755
+      },
+      "writtenOn": "2017-04-28T09:17:34Z",
+      "side": 1,
+      "message": "+1",
+      "parentUuid": "8462f4d6_d4f6ca97",
+      "range": {
+        "startLine": 10,
+        "startChar": 0,
+        "endLine": 10,
+        "endChar": 12
+      },
+      "revId": "24e04f4bb9f872d10522affbdca0e890bdf9367b",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e6dec487_2b20e7d7",
         "filename": "hot/worker_node.yml",
         "patchSetId": 3
@@ -151,6 +223,30 @@
       "writtenOn": "2017-04-28T09:14:13Z",
       "side": 1,
       "message": "ditto",
+      "range": {
+        "startLine": 15,
+        "startChar": 0,
+        "endLine": 15,
+        "endChar": 12
+      },
+      "revId": "24e04f4bb9f872d10522affbdca0e890bdf9367b",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8bdb994a_43d4ee09",
+        "filename": "hot/worker_node.yml",
+        "patchSetId": 3
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1002755
+      },
+      "writtenOn": "2017-04-28T09:17:34Z",
+      "side": 1,
+      "message": "+1",
+      "parentUuid": "e6dec487_2b20e7d7",
       "range": {
         "startLine": 15,
         "startChar": 0,
