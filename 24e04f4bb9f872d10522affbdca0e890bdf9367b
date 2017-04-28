@@ -1,0 +1,188 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6833bb76_b92b1ffd",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1010914
+      },
+      "writtenOn": "2017-04-28T09:14:13Z",
+      "side": 1,
+      "message": "I believe it is cleaner (and simple) to be based on the current patches for trunk ports support at heat",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 10,
+        "endChar": 30
+      },
+      "revId": "24e04f4bb9f872d10522affbdca0e890bdf9367b",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "12297379_c053ee01",
+        "filename": "hot/kuryr_heat_template.yml",
+        "patchSetId": 3
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1010914
+      },
+      "writtenOn": "2017-04-28T09:14:13Z",
+      "side": 1,
+      "message": "remove?",
+      "range": {
+        "startLine": 10,
+        "startChar": 0,
+        "endLine": 10,
+        "endChar": 12
+      },
+      "revId": "24e04f4bb9f872d10522affbdca0e890bdf9367b",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5df2f15a_b39a0699",
+        "filename": "hot/kuryr_heat_template.yml",
+        "patchSetId": 3
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1010914
+      },
+      "writtenOn": "2017-04-28T09:14:13Z",
+      "side": 1,
+      "message": "perhaps not the best name? kr_vm_net_iface",
+      "range": {
+        "startLine": 82,
+        "startChar": 2,
+        "endLine": 82,
+        "endChar": 14
+      },
+      "revId": "24e04f4bb9f872d10522affbdca0e890bdf9367b",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c8271b91_f63b09ba",
+        "filename": "hot/kuryr_heat_template.yml",
+        "patchSetId": 3
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 1010914
+      },
+      "writtenOn": "2017-04-28T09:14:13Z",
+      "side": 1,
+      "message": "does this create the port automatically? Nice!",
+      "range": {
+        "startLine": 98,
+        "startChar": 0,
+        "endLine": 100,
+        "endChar": 38
+      },
+      "revId": "24e04f4bb9f872d10522affbdca0e890bdf9367b",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b4f89ecc_3988acb5",
+        "filename": "hot/kuryr_heat_template.yml",
+        "patchSetId": 3
+      },
+      "lineNbr": 155,
+      "author": {
+        "id": 1010914
+      },
+      "writtenOn": "2017-04-28T09:14:13Z",
+      "side": 1,
+      "message": "Same should be done for master. And we may need one for infrastructure nodes, to better follow OpenShift deployment style",
+      "range": {
+        "startLine": 155,
+        "startChar": 2,
+        "endLine": 155,
+        "endChar": 15
+      },
+      "revId": "24e04f4bb9f872d10522affbdca0e890bdf9367b",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8462f4d6_d4f6ca97",
+        "filename": "hot/worker_node.yml",
+        "patchSetId": 3
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1010914
+      },
+      "writtenOn": "2017-04-28T09:14:13Z",
+      "side": 1,
+      "message": "remove?",
+      "range": {
+        "startLine": 10,
+        "startChar": 0,
+        "endLine": 10,
+        "endChar": 12
+      },
+      "revId": "24e04f4bb9f872d10522affbdca0e890bdf9367b",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e6dec487_2b20e7d7",
+        "filename": "hot/worker_node.yml",
+        "patchSetId": 3
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1010914
+      },
+      "writtenOn": "2017-04-28T09:14:13Z",
+      "side": 1,
+      "message": "ditto",
+      "range": {
+        "startLine": 15,
+        "startChar": 0,
+        "endLine": 15,
+        "endChar": 12
+      },
+      "revId": "24e04f4bb9f872d10522affbdca0e890bdf9367b",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "17737d6b_e3dfdfee",
+        "filename": "hot/worker_node.yml",
+        "patchSetId": 3
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1010914
+      },
+      "writtenOn": "2017-04-28T09:14:13Z",
+      "side": 1,
+      "message": "do we need a fip for the worker nodes?",
+      "range": {
+        "startLine": 45,
+        "startChar": 0,
+        "endLine": 48,
+        "endChar": 44
+      },
+      "revId": "24e04f4bb9f872d10522affbdca0e890bdf9367b",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    }
+  ]
+}
