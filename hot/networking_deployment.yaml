@@ -1,0 +1,103 @@
+heat_template_version: 2014-10-16
+
+description: Simple template to deploy kuryr resources
+
+parameters:
+  vm_net_cidr:
+    type: string
+    description: vm_net network address (CIDR notation)
+  vm_net_gateway:
+    type: string
+    description: vm_net network gateway address
+  pod_net_cidr:
+    type: string
+    description: pod_net network address (CIDR notation)
+  pod_net_gateway:
+    type: string
+    description: pod_net network gateway address
+  service_net_cidr:
+    type: string
+    description: service_net network address (CIDR notation)
+  service_net_gateway:
+    type: string
+    description: service_net network gateway address
+  service_router_port_ip:
+    type: string
+    description: IP for service router port
+    default: 172.30.255.254
+
+resources:
+  vm_net:
+    type: OS::Neutron::Net
+    properties:
+      name: vm_net
+
+  vm_subnet:
+    type: OS::Neutron::Subnet
+    properties:
+      network_id: { get_resource: vm_net }
+      cidr: { get_param: vm_net_cidr }
+      gateway_ip: { get_param: vm_net_gateway }
+
+  pod_net:
+    type: OS::Neutron::Net
+    properties:
+      name: pod_net
+
+  pod_subnet:
+    type: OS::Neutron::Subnet
+    properties:
+      network_id: { get_resource: pod_net }
+      cidr: { get_param: pod_net_cidr }
+      gateway_ip: { get_param: pod_net_gateway }
+
+  service_net:
+    type: OS::Neutron::Net
+    properties:
+      name: service_net
+
+  service_subnet:
+    type: OS::Neutron::Subnet
+    properties:
+      network_id: { get_resource: service_net }
+      cidr: { get_param: service_net_cidr }
+      gateway_ip: { get_param: service_net_gateway }
+
+  kuryr_router:
+    type: OS::Neutron::Router
+    properties:
+      external_gateway_info:
+        network: { get_param: public_net }
+
+  kr_vm_iface:
+    type: OS::Neutron::RouterInterface
+    properties:
+      router_id: { get_resource: kuryr_router }
+      subnet_id: { get_resource: vm_subnet }
+
+  kr_pod_iface:
+    type: OS::Neutron::RouterInterface
+    properties:
+      router_id: { get_resource: kuryr_router }
+      subnet_id: { get_resource: pod_subnet }
+
+  service_router_port:
+      type: OS::Neutron::Port
+      properties:
+        network: { get_resource: service_net}
+        fixed_ips:
+          - subnet: { get_resource: service_subnet }
+            ip_address: { get_param: service_router_port_ip }
+        name: service-router-port
+
+  kr_service_iface:
+    type: OS::Neutron::RouterInterface
+    properties:
+      router_id: { get_resource: kuryr_router }
+      port: { get_resource: service_router_port }
+
+outputs:
+  vm_net_id:
+    value: { get_resource: vm_net }
+  vm_subnet_id:
+    value: { get_resource: vm_subnet }

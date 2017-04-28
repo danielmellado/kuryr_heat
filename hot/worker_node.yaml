@@ -1,0 +1,61 @@
+heat_template_version: 2014-10-16
+
+description: Template to deploy openshift worker nodes
+
+parameters:
+  public_net:
+    type: string
+    label: public net ID
+    description: Public network for the node FIPs
+    default:
+  image:
+    type: string
+    label: Image name or ID
+    description: Image to be used for the kuryr nodes
+    default:
+  flavor:
+    type: string
+    label: Flavor
+    description: Flavor to be used for the image
+    default: m1.small
+  key:
+    type: string
+    label: key name
+    description: Keypair to be used for the instance
+  vm_net:
+    type: OS::Neutron::Network
+    label: VM Network
+    description: Neutron network for VMs
+  vm_subnet:
+    type: OS::Neutron::Subnet
+    label: VM Subnet
+    description: Neutron subnet for VMs
+
+resources:
+  instance_port:
+    type: OS::Neutron::Port
+    properties:
+      network: { get_param: vm_net }
+      security_groups:
+        - default
+      fixed_ips:
+        - subnet: { get_param: vm_subnet }
+
+  instance_fip:
+    type: OS::Neutron::FloatingIP
+    floating_network: { get_param: public_net }
+    port_id: { get_resource: instance_port }
+
+  instance:
+    type: OS::Nova::Server
+    properties:
+      image: { get_param: image }
+      flavor: { get_param: flavor }
+      key_name: { get_param: key }
+      networks:
+        - port: { get_resource: instance_port }
+
+outputs:
+  instance_fip:
+    description: FIP address of the worker node
+    value: { get_attr: [instance_fip, floating_ip_address] }
