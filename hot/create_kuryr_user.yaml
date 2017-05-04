@@ -1,0 +1,41 @@
+heat_template_version: 2016-10-14
+description: Creates kuryr service user.
+
+parameters:
+  kuryr_pass:
+    type: string
+    label: kuryr_password
+    description: Password to be used by Kuryr user
+    default: kuryr
+  service_project:
+    type: string
+    label: service_project
+    description: Service project name
+    default: service
+  service_role:
+    type: string
+    label: service_role
+    description: Service admin role for kuryr user
+    default: admin
+
+resources:
+  kuryr_user:
+    type: OS::Keystone::User
+    properties:
+      name: kuryr
+      domain: default
+      description: Kuryr service user
+      enabled: true
+      password: { get_param: kuryr_pass }
+      default_project: { get_param: service_project }
+      roles:
+        - role: { get_param: service_role }
+          project: { get_param: service_project }
+
+outputs:
+  kuryr_user_id:
+    value: {get_resource: kuryr_user}
+  service_project_id:
+    value: {get_param: service_project}
+  admin_role_id:
+    value: {get_param: service_role}
