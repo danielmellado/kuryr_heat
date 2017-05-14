@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1fba255c_80e47c42",
+        "filename": "create_stack.sh",
+        "patchSetId": 12
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1003057
+      },
+      "writtenOn": "2017-05-14T15:31:13Z",
+      "side": 1,
+      "message": "I don\u0027t think we should have dhcp on the service subnet. We only want dhcp on the VM subnet.",
+      "revId": "5984a8f6a8d36d8246922fd71ef1969738e3a6bc",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    }
+  ]
+}
