@@ -62,7 +62,7 @@ parameters:
 
 resources:
   network:
-    type: networking_deployment.yaml
+    type: OS::Kuryr::PodInVMNetworking
     properties:
       public_net: { get_param: public_net }
       vm_net_cidr: { get_param: vm_net_cidr }
