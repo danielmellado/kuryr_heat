@@ -131,12 +131,30 @@ resources:
       router_id: { get_resource: kuryr_router }
       port: { get_resource: service_router_port }
 
+  kr_sg:
+    type: OS::Neutron::SecurityGroup
+    properties:
+      name: the_sg
+      description: Ping and SSH
+      rules:
+      - protocol: icmp
+      - protocol: tcp
+        port_range_min: 22
+        port_range_max: 22
+      - protocol: tcp
+        port_range_min: 8443
+        port_range_max: 8443
+
 outputs:
   vm_net_id:
     value: { get_resource: vm_net }
   vm_subnet_id:
     value: { get_resource: vm_subnet }
+  pod_subnet_id:
+    value: { get_resource: pod_subnet }
   service_subnet_id:
     value: { get_resource: service_subnet }
   k8s_lb_pool_id:
     value: { get_resource: k8s_lb_pool }
+  kuryr_sg_id:
+    value: { get_resource: kr_sg }

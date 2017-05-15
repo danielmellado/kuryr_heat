@@ -28,6 +28,8 @@ function sub_stack() {
     # clear hook to allow heat deployment to continue
     echo "Continue with the stacking"
     openstack stack hook clear --pre-create "$deployment" worker_nodes
+
+    sub_show "$deployment"
 }
 
 function sub_unstack()
@@ -63,6 +65,32 @@ function sub_unstack()
     openstack stack hook clear --pre-delete "$deployment" trunk_ports
 }
 
+function sub_show() {
+    local deployment
+    local dns_output
+
+    local hostname
+    local address
+    local fqdn
+    
+    deployment=${1:-heat-kuryr-k8s}
+    dns_output=( $(openstack stack output show "${deployment}" trunk_dns -f json  | jq -r '.output_value' | jq -c '.[] | .[]') )
+    echo "VM subnet:      $(openstack stack output show "${deployment}" vm_subnet -f json | jq -r '.output_value')"
+    echo "Pod subnet:     $(openstack stack output show "${deployment}" pod_subnet -f json | jq -r '.output_value')"
+    echo "Service subnet: $(openstack stack output show "${deployment}" service_subnet -f json | jq -r '.output_value')"
+    echo "master FIPs:    $(openstack stack output show "${deployment}" master_fips -f json | jq -r '.output_value' | jq -r '.[]?' | xargs echo)"
+    echo "Worker nodes:"
+    for worker in "${dns_output[@]}"; do
+        hostname=$(echo "${worker}" | jq -r '.hostname')
+        address=$(echo "${worker}" | jq -r '.ip_address')
+        fqdn=$( echo "${worker}" | jq -r '.fqdn')
+        echo "    $hostname"
+        echo "        address: $address"
+        echo "        fqdn: $fqdn"
+    done
+    printf "\n"
+}
+
 function sub_help() {
     local myname
     myname=$(basename "$0")
@@ -70,8 +98,8 @@ function sub_help() {
     printf "Subcommands:\n"
     printf "    stack my_stack_name     Create Heat stack\n"
     printf "    unstack my_stack_name   Delete Heat stack\n"
+    printf "    show my_stack_name      Show important info about the deployed Heat stack\n"
 }
-
 command=$1
 case $command in
     "" | "-h" | "--help")
