@@ -1,0 +1,85 @@
+#!/bin/bash
+
+function sub_stack() {
+    local deployment=${1:-heat-kuryr-k8s}
+    # create stack
+    echo "Deploying the stack"
+
+    openstack stack create -e hot/parameters.yml -t hot/kuryr_heat_template.yml "$deployment"
+
+    # wait for the hook to stop stack deployment
+    echo "Waiting for the hook"
+    while true
+    do
+        hooks=$(openstack stack hook poll "${deployment}" | grep -c worker_nodes)
+        if [ "$hooks" -eq 1 ]; then
+            break
+        fi
+        sleep 5
+        echo "Pooling hooks"
+    done
+
+    # create trunk ports
+    echo "creating trunks"
+    openstack port list -f value | awk "/$deployment-trunk_ports/ {system("openstack network trunk create --parent-port " \$2 " trunk-" \$2)}"
+
+    # clear hook to allow heat deployment to continue
+    echo "Continue with the stacking"
+    openstack stack hook clear --pre-create "$deployment" worker_nodes
+}
+
+function sub_unstack()
+{
+    local deployment
+    local trunk_ports
+    local hooks
+    deployment=${1:-heat-kuryr-k8s}
+    trunk_ports=$(openstack stack output show "${deployment}" trunk_ports -f json | jq -r '.output_value' | jq -r '.[]')
+
+    # destroying the stack
+    echo "Destroying the stack"
+    openstack stack delete "$deployment"
+
+    # wait for the hook to stop unstack deployment
+    echo "Waiting for the hook"
+    while true
+    do
+        hooks=$(openstack stack hook poll "$deployment" | grep -c worker_nodes)
+        if [ "$hooks" -eq 1 ]; then
+            break
+        fi
+        sleep 5
+        echo "Pooling hooks"
+    done
+
+    echo "Deleting trunk ports"
+    for port in "$trunk_ports"; do
+        openstack network trunk delete "trunk-${port}"
+    done
+    openstack stack hook clear --post-delete "$deployment" worker_nodes
+}
+
+function sub_help() {
+    local myname
+    myname=$(basename "$0")
+    printf "Usage: %s <subcommand> [options]\n" "$myname"
+    printf "Subcommands:\n"
+    printf "    stack my_stack_name     Create Heat stack\n"
+    printf "    unstack my_stack_name   Delete Heat stack\n"
+}
+
+command=$1
+case $command in
+    "" | "-h" | "--help")
+        sub_help
+        ;;
+    *)
+        shift
+        "sub_${command}" "$@"
+        if [ $? = 127 ]; then
+            echo "Error: '$command' is not a known kuryr heat command." >&2
+            echo "       Run \'$(basename "$0")  --help\' for a list of known subcommands." >&2
+            exit 1
+        fi
+        ;;
+esac
