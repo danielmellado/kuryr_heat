@@ -32,6 +32,10 @@ parameters:
     type: string
     label: K8s Pool
     description: K8s LoadBalancer Pool
+  k8s_api_sg:
+    type: string
+    label: kubernetes API sg
+    description: Security Group for Kubernetes API
 
 resources:
   instance_port:
@@ -40,6 +44,7 @@ resources:
       network: { get_param: vm_net }
       security_groups:
         - default
+        - k8s_api_sg
       fixed_ips:
         - subnet: { get_param: vm_subnet }
 

@@ -88,6 +88,7 @@ resources:
           vm_net: { get_attr: [network, vm_net_id] }
           vm_subnet: { get_attr: [network, vm_subnet_id] }
           k8s_lb_pool: { get_attr: [network, k8s_lb_pool_id] }
+          k8s_api_sg: { get_attr: [network, kuryr_sg_id] }
 
   trunk_ports:
     type: OS::Heat::ResourceGroup
@@ -113,7 +114,16 @@ resources:
           index: "%index%"
 outputs:
   trunk_ports:
-    value: { get_attr: [trunk_ports, trunk_port_id]}
+    value: { get_attr: [trunk_ports, trunk_port_id] }
+  trunk_addresses:
+    value: { get_attr: [trunk_ports, trunk_port_ips] }
+  trunk_dns:
+    value: { get_attr: [trunk_ports, trunk_port_dns] }
+  master_fips:
+    value: { get_attr: [master_nodes, instance_fip] }
+  vm_subnet:
+    value: { get_attr: [network, vm_subnet_id] }
+  pod_subnet:
+    value: { get_attr: [network, pod_subnet_id] }
   service_subnet:
     value: { get_attr: [network, service_subnet_id]}
-
