@@ -4,10 +4,10 @@ parameters:
   worker_flavor: m1.large
   key: demo
   public_net: public
-  vm_net_cidr: 10.0.10.0/24
-  vm_net_gateway: 10.0.10.1
-  pod_net_cidr: 10.0.20.0/24
-  pod_net_gateway: 10.0.20.1
+  vm_net_cidr: 10.11.0.0/24
+  vm_net_gateway: 10.11.0.1
+  pod_net_cidr: 10.10.0.0/16
+  pod_net_gateway: 10.10.0.1
   service_net_cidr: 172.30.0.0/16
   service_net_gateway: 172.30.255.254
   service_router_port_ip: 172.30.255.254
