@@ -16,6 +16,7 @@ parameters:
   worker_num: 2
 
 resource_registry:
+  OS::Kuryr::PodInVMNetworking: networking_deployment.yaml
   resources:
     worker_nodes:
       hooks: [pre-create, post-delete]
