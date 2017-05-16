@@ -1,4 +1,4 @@
-heat_template_version: 2014-10-16
+heat_template_version: newton
 
 description: Template to deploy openshift master nodes
 
@@ -20,6 +20,10 @@ parameters:
     type: string
     label: key name
     description: Keypair to be used for the instance
+  private_key:
+    type: string
+    label: key content to access other nodes
+    description: private key to configure all nodes
   vm_net:
     type: string
     label: VM Network

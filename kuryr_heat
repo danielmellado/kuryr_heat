@@ -92,6 +92,13 @@ function sub_show() {
     printf "\n"
 }
 
+function sub_getkey() {
+    local deployment
+    deployment=${1:-heat-kuryr-k8s}
+
+    echo "$(openstack stack output show ${deployment} master_key_priv -f json | jq -r '.output_value')"
+}
+
 function sub_help() {
     local myname
     myname=$(basename "$0")
@@ -100,6 +107,7 @@ function sub_help() {
     printf "    stack my_stack_name     Create Heat stack\n"
     printf "    unstack my_stack_name   Delete Heat stack\n"
     printf "    show my_stack_name      Show important info about the deployed Heat stack\n"
+    printf "    getkey my_stack_name    Output the Heat stack instances privkey to stdout\n"
 }
 command=$1
 case $command in
