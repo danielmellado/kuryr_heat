@@ -22,6 +22,10 @@ parameters:
     description: List of Neutron Trunk Ports for VMs
   index:
     type: number
+  name:
+    type: string
+    label: Instance name
+    description: Worker node instance name
 
 resources:
   instance:
@@ -30,5 +34,6 @@ resources:
       image: { get_param: image }
       flavor: { get_param: flavor }
       key_name: { get_param: key }
+      name: { get_param: name }
       networks:
           - port: { get_param: [trunk_ports, {get_param: index}]}
