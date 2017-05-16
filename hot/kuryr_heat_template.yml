@@ -89,6 +89,7 @@ resources:
           vm_subnet: { get_attr: [network, vm_subnet_id] }
           k8s_lb_pool: { get_attr: [network, k8s_lb_pool_id] }
           k8s_api_sg: { get_attr: [network, kuryr_sg_id] }
+          name: master-%index%
 
   trunk_ports:
     type: OS::Heat::ResourceGroup
@@ -111,7 +112,8 @@ resources:
           flavor: { get_param: worker_flavor }
           key: { get_param: key }
           trunk_ports: { get_attr: [trunk_ports, trunk_port_id] }
-          index: "%index%"
+          index: %index%
+          name: worker-%index%
 outputs:
   trunk_ports:
     value: { get_attr: [trunk_ports, trunk_port_id] }
