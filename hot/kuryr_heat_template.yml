@@ -129,3 +129,5 @@ outputs:
     value: { get_attr: [network, pod_subnet_id] }
   service_subnet:
     value: { get_attr: [network, service_subnet_id]}
+  pod_sg:
+    value: { get_attr: [network, kuryr_sg_id]}

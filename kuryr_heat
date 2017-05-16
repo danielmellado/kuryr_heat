@@ -78,6 +78,7 @@ function sub_show() {
     echo "VM subnet:      $(openstack stack output show "${deployment}" vm_subnet -f json | jq -r '.output_value')"
     echo "Pod subnet:     $(openstack stack output show "${deployment}" pod_subnet -f json | jq -r '.output_value')"
     echo "Service subnet: $(openstack stack output show "${deployment}" service_subnet -f json | jq -r '.output_value')"
+    echo "Pod Sec. group: $(openstack stack output show "${deployment}" pod_sg -f json | jq -r '.output_value')"
     echo "master FIPs:    $(openstack stack output show "${deployment}" master_fips -f json | jq -r '.output_value' | jq -r '.[]?' | xargs echo)"
     echo "Worker nodes:"
     for worker in "${dns_output[@]}"; do

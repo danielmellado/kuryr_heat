@@ -132,10 +132,14 @@ resources:
   kr_sg:
     type: OS::Neutron::SecurityGroup
     properties:
-      name: the_sg
+      name: pod_sg
       description: Ping and SSH
       rules:
       - protocol: icmp
+      - ethertype: IPv4
+        remote_mode: remote_group_id
+      - ethertype: IPv6
+        remote_mode: remote_group_id
       - protocol: tcp
         port_range_min: 22
         port_range_max: 22
