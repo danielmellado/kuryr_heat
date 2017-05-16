@@ -46,7 +46,6 @@ resources:
       network_id: { get_resource: vm_net }
       cidr: { get_param: vm_net_cidr }
       gateway_ip: { get_param: vm_net_gateway }
-      dns_nameservers: ['8.8.8.8']
 
   pod_net:
     type: OS::Neutron::Net
