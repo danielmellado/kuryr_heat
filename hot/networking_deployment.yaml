@@ -58,6 +58,7 @@ resources:
       network_id: { get_resource: pod_net }
       cidr: { get_param: pod_net_cidr }
       gateway_ip: { get_param: pod_net_gateway }
+      enable_dhcp: False
 
   service_net:
     type: OS::Neutron::Net
