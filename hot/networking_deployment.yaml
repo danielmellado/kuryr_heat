@@ -46,7 +46,6 @@ resources:
       network_id: { get_resource: vm_net }
       cidr: { get_param: vm_net_cidr }
       gateway_ip: { get_param: vm_net_gateway }
-      dns_nameservers: ['8.8.8.8']
 
   pod_net:
     type: OS::Neutron::Net
@@ -59,7 +58,6 @@ resources:
       network_id: { get_resource: pod_net }
       cidr: { get_param: pod_net_cidr }
       gateway_ip: { get_param: pod_net_gateway }
-      dns_nameservers: ['8.8.8.8']
 
   service_net:
     type: OS::Neutron::Net
@@ -72,7 +70,6 @@ resources:
       network_id: { get_resource: service_net }
       cidr: { get_param: service_net_cidr }
       gateway_ip: { get_param: service_net_gateway }
-      dns_nameservers: ['8.8.8.8']
       enable_dhcp: False
 
   k8s_lb:
