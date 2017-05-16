@@ -88,7 +88,7 @@ resources:
           vm_net: { get_attr: [network, vm_net_id] }
           vm_subnet: { get_attr: [network, vm_subnet_id] }
           k8s_lb_pool: { get_attr: [network, k8s_lb_pool_id] }
-          k8s_api_sg: { get_attr: [network, kuryr_sg_id] }
+          k8s_api_sg: { get_attr: [network, k8s_api_sg_id] }
           name: "master-%index%"
 
   trunk_ports:
@@ -129,5 +129,5 @@ outputs:
     value: { get_attr: [network, pod_subnet_id] }
   service_subnet:
     value: { get_attr: [network, service_subnet_id]}
-  pod_sg:
-    value: { get_attr: [network, kuryr_sg_id]}
+  k8s_api_sg:
+    value: { get_attr: [network, k8s_api_sg_id]}

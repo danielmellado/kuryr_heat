@@ -129,10 +129,10 @@ resources:
       router_id: { get_resource: kuryr_router }
       port: { get_resource: service_router_port }
 
-  kr_sg:
+  k8s_api_sg:
     type: OS::Neutron::SecurityGroup
     properties:
-      name: pod_sg
+      name: K8s_api_sg
       description: Ping and SSH
       rules:
       - protocol: icmp
@@ -158,5 +158,5 @@ outputs:
     value: { get_resource: service_subnet }
   k8s_lb_pool_id:
     value: { get_resource: k8s_lb_pool }
-  kuryr_sg_id:
-    value: { get_resource: kr_sg }
+  k8s_api_sg_id:
+    value: { get_resource: k8s_api_sg }
