@@ -71,6 +71,28 @@ resources:
       key_name: { get_param: key }
       networks:
         - port: { get_resource: instance_port }
+      user_data_format: RAW
+      user_data:
+        str_replace:
+          params:
+            __privkey__: { get_param: private_key }
+          template: |
+            #!/bin/bash
+            set -ex
+
+            # Deps for openshift-ansible
+            yum install -y epel-release
+            yum install -y ansible git
+            git clone https://github.com/celebdor/openshift-ansible /home/centos/openshift-ansible
+            pushd /home/centos/openshift-ansible
+            git checkout kuryr_rebase
+            popd
+            chown centos:centos -R /home/centos/openshift-ansible
+            mkdir -p /home/centos/.ssh
+            cat > /home/centos/.ssh/id_rsa <<EOF
+            __privkey__
+            EOF
+
 
   lb_member:
     type: OS::Neutron::LBaaS::PoolMember
