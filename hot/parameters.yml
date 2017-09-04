@@ -11,13 +11,8 @@ parameters:
   service_net_gateway: 172.30.255.254
   service_router_port_ip: 172.30.255.254
   service_lbaas_ip: 172.30.0.1
-  master_num: 2
-  worker_num: 2
+  master_num: 1
+  worker_num: 3
 
 resource_registry:
   OS::Kuryr::PodInVMNetworking: networking_deployment.yaml
-  resources:
-    worker_nodes:
-      hooks: pre-create
-    trunk_ports:
-      hooks: pre-delete

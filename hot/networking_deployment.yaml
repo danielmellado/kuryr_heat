@@ -38,7 +38,11 @@ resources:
   vm_net:
     type: OS::Neutron::Net
     properties:
-      name: vm_net
+      name:
+        str_replace:
+          template: "__stack__/vm_net"
+          params:
+            __stack__: { get_param: 'OS::stack_name' }
 
   vm_subnet:
     type: OS::Neutron::Subnet
@@ -46,11 +50,20 @@ resources:
       network_id: { get_resource: vm_net }
       cidr: { get_param: vm_net_cidr }
       gateway_ip: { get_param: vm_net_gateway }
+      name:
+        str_replace:
+          template: "__stack__/vm_subnet"
+          params:
+            __stack__: { get_param: 'OS::stack_name' }
 
   pod_net:
     type: OS::Neutron::Net
     properties:
-      name: pod_net
+      name:
+        str_replace:
+          template: "__stack__/pod_net"
+          params:
+            __stack__: { get_param: 'OS::stack_name' }
 
   pod_subnet:
     type: OS::Neutron::Subnet
@@ -59,11 +72,20 @@ resources:
       cidr: { get_param: pod_net_cidr }
       gateway_ip: { get_param: pod_net_gateway }
       enable_dhcp: False
+      name:
+        str_replace:
+          template: "__stack__/pod_subnet"
+          params:
+            __stack__: { get_param: 'OS::stack_name' }
 
   service_net:
     type: OS::Neutron::Net
     properties:
-      name: service_net
+      name:
+        str_replace:
+          template: "__stack__/service_net"
+          params:
+            __stack__: { get_param: 'OS::stack_name' }
 
   service_subnet:
     type: OS::Neutron::Subnet
@@ -72,18 +94,31 @@ resources:
       cidr: { get_param: service_net_cidr }
       gateway_ip: { get_param: service_net_gateway }
       enable_dhcp: False
+      name:
+        str_replace:
+          template: "__stack__/service_subnet"
+          params:
+            __stack__: { get_param: 'OS::stack_name' }
 
   k8s_lb:
     type: OS::Neutron::LBaaS::LoadBalancer
     properties:
-      name: kubernetes-lb
+      name:
+        str_replace:
+          template: "__stack__/openshift-lb"
+          params:
+            __stack__: { get_param: 'OS::stack_name' }
       vip_address: { get_param: service_lbaas_ip }
       vip_subnet: { get_resource: service_subnet }
 
   k8s_lb_listener:
     type: OS::Neutron::LBaaS::Listener
     properties:
-      name: kubernetes-listener-tcp-443
+      name:
+        str_replace:
+          template: "__stack__/openshift-tcp-443"
+          params:
+            __stack__: { get_param: 'OS::stack_name' }
       loadbalancer: { get_resource: k8s_lb }
       protocol: HTTPS
       protocol_port: 443
@@ -91,7 +126,11 @@ resources:
   k8s_lb_pool:
     type: OS::Neutron::LBaaS::Pool
     properties:
-      name: k8s-https-pool
+      name:
+        str_replace:
+          template: "__stack__/openshift-https"
+          params:
+            __stack__: { get_param: 'OS::stack_name' }
       protocol: HTTPS
       lb_algorithm: ROUND_ROBIN
       listener: { get_resource: k8s_lb_listener }
@@ -99,6 +138,11 @@ resources:
   kuryr_router:
     type: OS::Neutron::Router
     properties:
+      name:
+        str_replace:
+          template: "__stack__/router"
+          params:
+            __stack__: { get_param: 'OS::stack_name' }
       external_gateway_info:
         network: { get_param: public_net }
 
@@ -121,7 +165,11 @@ resources:
         fixed_ips:
           - subnet: { get_resource: service_subnet }
             ip_address: { get_param: service_router_port_ip }
-        name: service-router-port
+        name:
+          str_replace:
+            template: "__stack__/service-router-port"
+            params:
+              __stack__: { get_param: 'OS::stack_name' }
 
   kr_service_iface:
     type: OS::Neutron::RouterInterface
@@ -132,20 +180,37 @@ resources:
   k8s_api_sg:
     type: OS::Neutron::SecurityGroup
     properties:
-      name: K8s_api_sg
+      name:
+        str_replace:
+          template: "__stack__/openshift-api"
+          params:
+            __stack__: { get_param: 'OS::stack_name' }
       description: Ping and SSH
       rules:
       - protocol: icmp
       - ethertype: IPv4
-        remote_mode: remote_group_id
-      - ethertype: IPv6
-        remote_mode: remote_group_id
+        remote_ip_prefix: { get_param: pod_net_cidr }
       - protocol: tcp
         port_range_min: 22
         port_range_max: 22
       - protocol: tcp
         port_range_min: 8443
         port_range_max: 8443
+
+  pod_access_sg:
+    type: OS::Neutron::SecurityGroup
+    properties:
+      name:
+        str_replace:
+          template: "__stack__/pod_access"
+          params:
+            __stack__: { get_param: 'OS::stack_name' }
+      description: Give Services access to the pods
+      rules:
+      - ethertype: IPv4
+        remote_ip_prefix: { get_param: service_net_cidr }
+      - ethertype: IPv4
+        remote_ip_prefix: { get_param: vm_net_cidr }
 
 outputs:
   vm_net_id:
@@ -160,3 +225,5 @@ outputs:
     value: { get_resource: k8s_lb_pool }
   k8s_api_sg_id:
     value: { get_resource: k8s_api_sg }
+  pod_access_sg_id:
+    value: { get_resource: pod_access_sg }

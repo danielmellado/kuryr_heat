@@ -1,0 +1,96 @@
+#!/bin/bash
+
+function sub_stack() {
+    local deployment=${1:-heat-kuryr-k8s}
+    # create stack
+    echo "Deploying the stack"
+
+    openstack stack create -e hot/parameters.yml -t hot/kuryr_heat_template.yml "$deployment"
+
+    sub_show "$deployment"
+}
+
+function sub_unstack()
+{
+    local deployment
+    deployment=${1:-heat-kuryr-k8s}
+
+    # destroying the stack
+    echo "Destroying the stack"
+    openstack stack delete "$deployment"
+}
+
+function _wait_for_after_in_progress() {
+    local deployment
+    local status
+    deployment="$1"
+
+    while true; do
+        status=$(openstack stack show "${deployment}" -c stack_status -f value)
+        if [[ ! "$status" =~ IN_PROGRESS$ ]]; then
+            break
+        fi
+    done
+}
+
+function sub_show() {
+    local deployment
+    local dns_output
+
+    local hostname
+    local address
+    local fqdn
+
+    deployment=${1:-heat-kuryr-k8s}
+    _wait_for_after_in_progress "$deployment"
+    dns_output=( $(openstack stack output show "${deployment}" trunk_dns -f json  | jq -r '.output_value' | jq -c '.[] | .[]') )
+    echo "VM subnet:      $(openstack stack output show "${deployment}" vm_subnet -f json | jq -r '.output_value')"
+    echo "Pod subnet:     $(openstack stack output show "${deployment}" pod_subnet -f json | jq -r '.output_value')"
+    echo "Service subnet: $(openstack stack output show "${deployment}" service_subnet -f json | jq -r '.output_value')"
+    echo "K8s API Sec. group: $(openstack stack output show "${deployment}" k8s_api_sg -f json | jq -r '.output_value')"
+    echo "Pod kubelet/Service Access Sec. group: $(openstack stack output show "${deployment}" pod_access_sg -f json | jq -r '.output_value')"
+    echo "master FIPs:    $(openstack stack output show "${deployment}" master_fips -f json | jq -r '.output_value' | jq -r '.[]' | xargs echo)"
+    echo "Worker nodes:"
+    for worker in "${dns_output[@]}"; do
+        hostname=$(echo "${worker}" | jq -r '.hostname')
+        address=$(echo "${worker}" | jq -r '.ip_address')
+        fqdn=$( echo "${worker}" | jq -r '.fqdn')
+        echo "    $hostname"
+        echo "        address: $address"
+        echo "        fqdn: $fqdn"
+    done
+    printf "\n"
+}
+
+function sub_getkey() {
+    local deployment
+    deployment=${1:-heat-kuryr-k8s}
+
+    echo "$(openstack stack output show ${deployment} master_key_priv -f json | jq -r '.output_value')"
+}
+
+function sub_help() {
+    local myname
+    myname=$(basename "$0")
+    printf "Usage: %s <subcommand> [options]\n" "$myname"
+    printf "Subcommands:\n"
+    printf "    stack my_stack_name     Create Heat stack\n"
+    printf "    unstack my_stack_name   Delete Heat stack\n"
+    printf "    show my_stack_name      Show important info about the deployed Heat stack\n"
+    printf "    getkey my_stack_name    Output the Heat stack instances privkey to stdout\n"
+}
+command=$1
+case $command in
+    "" | "-h" | "--help")
+        sub_help
+        ;;
+    *)
+        shift
+        "sub_${command}" "$@"
+        if [ $? = 127 ]; then
+            echo "Error: '$command' is not a known kuryr heat command." >&2
+            echo "       Run \'$(basename "$0")  --help\' for a list of known subcommands." >&2
+            exit 1
+        fi
+        ;;
+esac

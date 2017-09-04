@@ -92,17 +92,11 @@ resources:
           vm_subnet: { get_attr: [network, vm_subnet_id] }
           k8s_lb_pool: { get_attr: [network, k8s_lb_pool_id] }
           k8s_api_sg: { get_attr: [network, k8s_api_sg_id] }
-          name: "master-%index%"
-
-  trunk_ports:
-    type: OS::Heat::ResourceGroup
-    properties:
-      count: { get_param: worker_num }
-      resource_def:
-        type: trunk.yaml
-        properties:
-          network: { get_attr: [network, vm_net_id] }
-          subnet: { get_attr: [network, vm_subnet_id] }
+          name:
+            str_replace:
+              template: "__stack__/master-%index%"
+              params:
+                __stack__: { get_param: 'OS::stack_name' }
 
   worker_nodes:
     type: OS::Heat::ResourceGroup
@@ -114,16 +108,21 @@ resources:
           image: { get_param: image }
           flavor: { get_param: worker_flavor }
           key: { get_resource: master_key }
-          trunk_ports: { get_attr: [trunk_ports, trunk_port_id] }
           index: "%index%"
-          name: "worker-%index%"
+          name:
+            str_replace:
+              template: "__stack__/worker-%index%"
+              params:
+                __stack__: { get_param: 'OS::stack_name' }
+          network: { get_attr: [network, vm_net_id] }
+          subnet: { get_attr: [network, vm_subnet_id] }
 outputs:
   trunk_ports:
-    value: { get_attr: [trunk_ports, trunk_port_id] }
+    value: { get_attr: [worker_nodes, trunk_port_id] }
   trunk_addresses:
-    value: { get_attr: [trunk_ports, trunk_port_ips] }
+    value: { get_attr: [worker_nodes, trunk_port_ips] }
   trunk_dns:
-    value: { get_attr: [trunk_ports, trunk_port_dns] }
+    value: { get_attr: [worker_nodes, trunk_port_dns] }
   master_fips:
     value: { get_attr: [master_nodes, instance_fip] }
   vm_subnet:
@@ -134,6 +133,8 @@ outputs:
     value: { get_attr: [network, service_subnet_id] }
   k8s_api_sg:
     value: { get_attr: [network, k8s_api_sg_id] }
+  pod_access_sg:
+    value: { get_attr: [network, pod_access_sg_id] }
   master_key_pub:
     value: { get_attr: [master_key, public_key] }
   master_key_priv:
