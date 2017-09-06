@@ -47,6 +47,13 @@ parameters:
     type: string
     description: IP for the kubernetes load balancer
     default: 172.30.0.1
+  external_dns_server:
+    type: string
+    description: IP for the DNS server
+    default: ""
+  dns_domain:
+    type: string
+    description: search domain for the node
   master_num:
     type: number
     description: Number of master VMs
@@ -92,11 +99,9 @@ resources:
           vm_subnet: { get_attr: [network, vm_subnet_id] }
           k8s_lb_pool: { get_attr: [network, k8s_lb_pool_id] }
           k8s_api_sg: { get_attr: [network, k8s_api_sg_id] }
-          name:
-            str_replace:
-              template: "__stack__/master-%index%"
-              params:
-                __stack__: { get_param: 'OS::stack_name' }
+          name: "master-%index%"
+          external_dns_server: { get_param: external_dns_server }
+          dns_domain: { get_param: dns_domain }
 
   worker_nodes:
     type: OS::Heat::ResourceGroup
@@ -109,13 +114,11 @@ resources:
           flavor: { get_param: worker_flavor }
           key: { get_resource: master_key }
           index: "%index%"
-          name:
-            str_replace:
-              template: "__stack__/worker-%index%"
-              params:
-                __stack__: { get_param: 'OS::stack_name' }
+          name: "worker-%index%"
           network: { get_attr: [network, vm_net_id] }
           subnet: { get_attr: [network, vm_subnet_id] }
+          external_dns_server: { get_param: external_dns_server }
+          dns_domain: { get_param: dns_domain }
 outputs:
   trunk_ports:
     value: { get_attr: [worker_nodes, trunk_port_id] }
@@ -125,6 +128,8 @@ outputs:
     value: { get_attr: [worker_nodes, trunk_port_dns] }
   master_fips:
     value: { get_attr: [master_nodes, instance_fip] }
+  master_port_dns:
+    value: { get_attr: [master_nodes, port_dns] }
   vm_subnet:
     value: { get_attr: [network, vm_subnet_id] }
   pod_subnet:

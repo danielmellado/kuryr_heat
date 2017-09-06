@@ -1,4 +1,4 @@
-heat_template_version: 2014-10-16
+heat_template_version: pike
 
 description: Template to deploy openshift worker nodes
 
@@ -30,6 +30,12 @@ parameters:
     type: string
     label: VM Subnet
     description: Neutron subnet for VMs
+  external_dns_server:
+    type: string
+    description: IP for the DNS server
+  dns_domain:
+    type: string
+    description: search domain for the node
 
 resources:
   parent_port:
@@ -54,9 +60,37 @@ resources:
       image: { get_param: image }
       flavor: { get_param: flavor }
       key_name: { get_param: key }
-      name: { get_param: name }
+      name:
+        str_replace:
+          template: "__stack__/__name__"
+          params:
+            __stack__: { get_param: 'OS::stack_name' }
+            __name__: { get_param: name }
       networks:
           - port: { get_attr: [trunk_port, port_id] }
+      user_data_format: RAW
+      user_data:
+        str_replace:
+          params:
+            __dns_domain__: { get_param: dns_domain }
+            __external_dns_server__: { get_param: external_dns_server }
+            __name__: { get_param: name }
+          template: |
+            #!/bin/bash
+            # Wait a bit for connectivity
+            sleep 10
+
+            if [[ "__external_dns_server__" != "" ]]; then
+                echo "Setting up cluster DNS"
+                cat > /etc/resolv.conf << EOF
+            search __dns_domain__
+            nameserver __external_dns_server__
+            EOF
+            else
+                sed -i -e 's/search.*/search __dns_domain__/' /etc/resolv.conf
+            fi
+
+            hostnamectl set-hostname "__name__.__dns_domain__"
 
 outputs:
   trunk_port_id:
@@ -64,4 +98,13 @@ outputs:
   trunk_port_ips:
     value: { get_attr: [parent_port, fixed_ips] }
   trunk_port_dns:
-    value: { get_attr: [parent_port, dns_assignment] }
+    value:
+      str_replace:
+        template: "{\"fqdn\": \"__name__.__domain__\", \"fixed_ips\": __ips__}"
+        params:
+          __name__: { get_param: name }
+          __domain__: { get_param: dns_domain }
+          __ips__:
+            list_join:
+            - ','
+            - { get_attr: [parent_port, fixed_ips] }

@@ -1,4 +1,4 @@
-heat_template_version: newton
+heat_template_version: pike
 
 description: Template to deploy openshift master nodes
 
@@ -44,6 +44,12 @@ parameters:
     type: string
     label: Instance name
     description: Master node instance name
+  external_dns_server:
+    type: string
+    description: IP for the DNS server
+  dns_domain:
+    type: string
+    description: search domain for the node
 
 resources:
   instance_port:
@@ -65,7 +71,12 @@ resources:
   instance:
     type: OS::Nova::Server
     properties:
-      name: { get_param: name }
+      name:
+        str_replace:
+          template: "__stack__/__name__"
+          params:
+            __stack__: { get_param: 'OS::stack_name' }
+            __name__: { get_param: name }
       image: { get_param: image }
       flavor: { get_param: flavor }
       key_name: { get_param: key }
@@ -76,11 +87,36 @@ resources:
         str_replace:
           params:
             __privkey__: { get_param: private_key }
+            __dns_domain__: { get_param: dns_domain }
+            __external_dns_server__: { get_param: external_dns_server }
+            __name__: { get_param: name }
           template: |
             #!/bin/bash
             set -ex
 
             # Deps for openshift-ansible
+            mkdir -p /home/centos/.ssh
+            cat > /home/centos/.ssh/id_rsa <<EOF
+            __privkey__
+            EOF
+            chown centos:centos /home/centos/.ssh/id_rsa
+            chmod 0600 /home/centos/.ssh/id_rsa
+
+            sleep 10
+
+            if [[ "__external_dns_server__" != "" ]]; then
+                echo "Setting up cluster DNS"
+                cat > /etc/resolv.conf << EOF
+            search __dns_domain__
+            nameserver __external_dns_server__
+            EOF
+            else
+                sed -i -e 's/search.*/search __dns_domain__/' /etc/resolv.conf
+            fi
+
+            hostnamectl set-hostname "__name__.__dns_domain__"
+
+            # Prepare OpenShift ansible deployment
             yum install -y epel-release
             yum install -y ansible git
             git clone https://github.com/celebdor/openshift-ansible /home/centos/openshift-ansible
@@ -88,11 +124,6 @@ resources:
             git checkout kuryr_rebase
             popd
             chown centos:centos -R /home/centos/openshift-ansible
-            mkdir -p /home/centos/.ssh
-            cat > /home/centos/.ssh/id_rsa <<EOF
-            __privkey__
-            EOF
-
 
   lb_member:
     type: OS::Neutron::LBaaS::PoolMember
@@ -106,3 +137,14 @@ outputs:
   instance_fip:
     description: FIP address of the worker node
     value: { get_attr: [instance_fip, floating_ip_address] }
+  port_dns:
+    value:
+      str_replace:
+        template: "{\"fqdn\": \"__name__.__domain__\", \"fixed_ips\": __ips__}"
+        params:
+          __name__: { get_param: name }
+          __domain__: { get_param: dns_domain }
+          __ips__:
+            list_join:
+            - ','
+            - { get_attr: [instance_port, fixed_ips] }

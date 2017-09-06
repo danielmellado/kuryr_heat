@@ -11,6 +11,8 @@ parameters:
   service_net_gateway: 172.30.255.254
   service_router_port_ip: 172.30.255.254
   service_lbaas_ip: 172.30.0.1
+  external_dns_server: 10.12.70.62
+  dns_domain: kuryrscale
   master_num: 1
   worker_num: 3
 

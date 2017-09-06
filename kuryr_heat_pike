@@ -35,7 +35,8 @@ function _wait_for_after_in_progress() {
 
 function sub_show() {
     local deployment
-    local dns_output
+    local workers_output
+    local masters_output
 
     local hostname
     local address
@@ -43,23 +44,54 @@ function sub_show() {
 
     deployment=${1:-heat-kuryr-k8s}
     _wait_for_after_in_progress "$deployment"
-    dns_output=( $(openstack stack output show "${deployment}" trunk_dns -f json  | jq -r '.output_value' | jq -c '.[] | .[]') )
     echo "VM subnet:      $(openstack stack output show "${deployment}" vm_subnet -f json | jq -r '.output_value')"
     echo "Pod subnet:     $(openstack stack output show "${deployment}" pod_subnet -f json | jq -r '.output_value')"
     echo "Service subnet: $(openstack stack output show "${deployment}" service_subnet -f json | jq -r '.output_value')"
     echo "K8s API Sec. group: $(openstack stack output show "${deployment}" k8s_api_sg -f json | jq -r '.output_value')"
     echo "Pod kubelet/Service Access Sec. group: $(openstack stack output show "${deployment}" pod_access_sg -f json | jq -r '.output_value')"
     echo "master FIPs:    $(openstack stack output show "${deployment}" master_fips -f json | jq -r '.output_value' | jq -r '.[]' | xargs echo)"
+    workers_output=$(openstack stack output show "${deployment}" trunk_dns -f json | jq .output_value -r | jq .[] -r)
+    masters_output=$(openstack stack output show "${deployment}" master_port_dns -f json | jq .output_value -r | jq .[] -r)
+    echo "Master nodes:"
+    echo $masters_output | jq -r '"\(.fqdn) \(.fixed_ips.ip_address)"'
     echo "Worker nodes:"
-    for worker in "${dns_output[@]}"; do
-        hostname=$(echo "${worker}" | jq -r '.hostname')
-        address=$(echo "${worker}" | jq -r '.ip_address')
-        fqdn=$( echo "${worker}" | jq -r '.fqdn')
-        echo "    $hostname"
-        echo "        address: $address"
-        echo "        fqdn: $fqdn"
-    done
+    echo $workers_output | jq -r '"\(.fqdn) \(.fixed_ips.ip_address)"'
     printf "\n"
+}
+
+function sub_update_dns_server() {
+    local ns_update_temp
+    local masters_output
+    local workers_output
+    local domain
+    local deployment
+    local key
+
+    deployment="$1"
+    domain="$2"
+    key="$3"
+    ns_update_temp=$(mktemp)
+    masters_output=$(openstack stack output show "${deployment}" master_port_dns -f json | jq .output_value -r | jq .[] -r)
+    workers_output=$(openstack stack output show "${deployment}" trunk_dns -f json | jq .output_value -r | jq .[] -r)
+
+    cat > "$ns_update_temp" << NS_EOF
+server ns.${domain}
+zone ${domain}
+NS_EOF
+
+    echo "$masters_output" | jq -r '"\(.fqdn) \(.fixed_ips.ip_address)"' | \
+        awk '{printf "update delete %s. A\nupdate add %s. 3600 A %s\n", $1, $1, $2}' >> "$ns_update_temp"
+    echo "$workers_output" | jq -r '"\(.fqdn) \(.fixed_ips.ip_address)"' | \
+        awk '{printf "update delete %s. A\nupdate add %s. 3600 A %s\n", $1, $1, $2}' >> "$ns_update_temp"
+
+    cat >> "$ns_update_temp" << NS_EOF
+show
+send
+NS_EOF
+
+    echo "Updating DNS zone ${domain} with:"
+    cat "$ns_update_temp"
+    nsupdate -k "$key" -v "$ns_update_temp"
 }
 
 function sub_getkey() {
@@ -67,6 +99,91 @@ function sub_getkey() {
     deployment=${1:-heat-kuryr-k8s}
 
     echo "$(openstack stack output show ${deployment} master_key_priv -f json | jq -r '.output_value')"
+}
+
+function sub_ansible_inventory() {
+    local deployment
+    local external_dns
+    local tmp
+    local masters_output
+    local workers_output
+    local project_id
+    local pod_sgs
+    local pod_subnet_id
+    local vm_subnet_id
+    local service_subnet_id
+
+    deployment=${1:-heat-kuryr-k8s}
+    external_dns="$2"
+    tmp=$(mktemp)
+    project_id="$(openstack project show ${OS_PROJECT_NAME} -f value -c id)"
+    pod_subnet_id=$(openstack stack output show "${deployment}" pod_subnet -f json | jq -r '.output_value')
+    vm_subnet_id=$(openstack stack output show "${deployment}" vm_subnet -f json | jq -r '.output_value')
+    service_subnet_id=$(openstack stack output show "${deployment}" service_subnet -f json | jq -r '.output_value')
+
+    # Get comma separated SGs to apply to pods
+    pod_sgs="$(openstack security group list --project "${project_id}" -f value | awk '$2 ~ /default/ {print $1}')"
+    pod_sgs="${pod_sgs},$(openstack stack output show "${deployment}" k8s_api_sg -f json | jq -r '.output_value')"
+
+    cat > "$tmp" << EOF
+[OSEv3:children]
+masters
+nodes
+etcd
+
+[OSEv3:vars]
+openshift_use_kuryr=True
+openshift_use_openshift_sdn=False
+os_sdn_network_plugin_name=cni
+kuryr_cni_link_interface=eth0
+openshift_use_dnsmasq=False
+openshift_dns_ip=${external_dns}
+
+# Set userspace so that there's no iptables remains
+openshift_node_proxy_mode=userspace
+
+ansible_ssh_user=centos
+ansible_become=yes
+debug_level=2
+
+openshift_deployment_type=origin
+
+openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider', 'filename': '/etc/origin/master/htpasswd'}]
+
+openshift_master_api_env_vars={"ENABLE_HTTP2": "true"}
+openshift_master_controllers_env_vars={"ENABLE_HTTP2": "true"}
+openshift_node_env_vars={"ENABLE_HTTP2": "true"}
+
+# Disable management of the OpenShift Registry
+openshift_hosted_manage_registry=false
+# Disable management of the OpenShift Router
+openshift_hosted_manage_router=false
+
+# Openstack
+kuryr_openstack_auth_url=${OS_AUTH_URL}
+kuryr_openstack_user_domain_name=${OS_USER_DOMAIN_NAME}
+kuryr_openstack_user_project_name=${OS_PROJECT_DOMAIN_NAME}
+kuryr_openstack_project_id=${project_id}
+kuryr_openstack_username=${OS_USERNAME}
+kuryr_openstack_password=${OS_PASSWORD}
+kuryr_openstack_pod_sg_id=${pod_sgs}
+kuryr_openstack_pod_subnet_id=${pod_subnet_id}
+kuryr_openstack_worker_nodes_subnet_id=${vm_subnet_id}
+kuryr_openstack_service_subnet_id=${service_subnet_id}
+kuryr_openstack_pod_project_id=${project_id}
+EOF
+
+    masters_output=$(openstack stack output show "${deployment}" master_port_dns -f json | jq .output_value -r | jq .[] -r)
+    workers_output=$(openstack stack output show "${deployment}" trunk_dns -f json | jq .output_value -r | jq .[] -r)
+
+    echo "$masters_output" | jq -r '"\(.fqdn) \(.fixed_ips.ip_address)"' | \
+        awk 'BEGIN{print "[masters]"}; {print $1}' >> "$tmp"
+    echo "$masters_output" | jq -r '"\(.fqdn) \(.fixed_ips.ip_address)"' | \
+        awk 'BEGIN{print "[etcd]"}; {print $1}' >> "$tmp"
+    echo "$workers_output" | jq -r '"\(.fqdn) \(.fixed_ips.ip_address)"' | \
+        awk 'BEGIN{print "[nodes]"}; {print $1}' >> "$tmp"
+
+    cat "$tmp"
 }
 
 function sub_help() {
