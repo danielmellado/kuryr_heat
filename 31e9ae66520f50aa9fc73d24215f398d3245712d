@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "65cb3a8d_65a11fec",
+        "filename": "hot/worker_node.yaml",
+        "patchSetId": 1
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1010914
+      },
+      "writtenOn": "2017-09-06T07:35:26Z",
+      "side": 1,
+      "message": "this should be the parent_port, right?",
+      "range": {
+        "startLine": 59,
+        "startChar": 31,
+        "endLine": 59,
+        "endChar": 41
+      },
+      "revId": "31e9ae66520f50aa9fc73d24215f398d3245712d",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    }
+  ]
+}
