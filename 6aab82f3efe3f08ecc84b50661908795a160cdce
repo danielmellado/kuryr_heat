@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3d36eefd_85adf9f6",
+        "filename": "hot/master_node.yaml",
+        "patchSetId": 1
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1010914
+      },
+      "writtenOn": "2017-09-06T07:40:44Z",
+      "side": 1,
+      "message": "Is there a reason to have sometimes first template and them params, and other times the other way around?",
+      "range": {
+        "startLine": 76,
+        "startChar": 0,
+        "endLine": 77,
+        "endChar": 17
+      },
+      "revId": "6aab82f3efe3f08ecc84b50661908795a160cdce",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fe7453c7_19b7fbc4",
+        "filename": "hot/worker_node.yaml",
+        "patchSetId": 1
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1010914
+      },
+      "writtenOn": "2017-09-06T07:40:44Z",
+      "side": 1,
+      "message": "should be parent_port I believe",
+      "range": {
+        "startLine": 70,
+        "startChar": 31,
+        "endLine": 70,
+        "endChar": 41
+      },
+      "revId": "6aab82f3efe3f08ecc84b50661908795a160cdce",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    }
+  ]
+}
