@@ -123,7 +123,7 @@ function sub_ansible_inventory() {
 
     # Get comma separated SGs to apply to pods
     pod_sgs="$(openstack security group list --project "${project_id}" -f value | awk '$2 ~ /default/ {print $1}')"
-    pod_sgs="${pod_sgs},$(openstack stack output show "${deployment}" k8s_api_sg -f json | jq -r '.output_value')"
+    pod_sgs="${pod_sgs},$(openstack stack output show "${deployment}" pod_access_sg -f json | jq -r '.output_value')"
 
     cat > "$tmp" << EOF
 [OSEv3:children]
