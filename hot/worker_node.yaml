@@ -91,6 +91,8 @@ resources:
             fi
 
             hostnamectl set-hostname "__name__.__dns_domain__"
+            yum install -y NetworkManager
+            systemctl start NetworkManager
 
 outputs:
   trunk_port_id:
