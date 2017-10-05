@@ -136,8 +136,9 @@ openshift_use_kuryr=True
 openshift_use_openshift_sdn=False
 os_sdn_network_plugin_name=cni
 kuryr_cni_link_interface=eth0
-openshift_use_dnsmasq=False
+openshift_use_dnsmasq=True
 openshift_dns_ip=${external_dns}
+openshift_disable_check=disk_availability,docker_storage,memory_availability
 
 # Set userspace so that there's no iptables remains
 openshift_node_proxy_mode=userspace
@@ -161,8 +162,8 @@ openshift_hosted_manage_router=false
 
 # Openstack
 kuryr_openstack_auth_url=${OS_AUTH_URL}
-kuryr_openstack_user_domain_name=${OS_USER_DOMAIN_NAME}
-kuryr_openstack_user_project_name=${OS_PROJECT_DOMAIN_NAME}
+kuryr_openstack_user_domain_name=${OS_USER_DOMAIN_ID}
+kuryr_openstack_user_project_name=${OS_PROJECT_NAME}
 kuryr_openstack_project_id=${project_id}
 kuryr_openstack_username=${OS_USERNAME}
 kuryr_openstack_password=${OS_PASSWORD}
