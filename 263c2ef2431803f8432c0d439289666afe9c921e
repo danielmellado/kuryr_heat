@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "84bbf333_2ad313e2",
+        "filename": "hot/worker_node.yaml",
+        "patchSetId": 1
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1010914
+      },
+      "writtenOn": "2017-10-18T07:21:21Z",
+      "side": 1,
+      "message": "Nit: Should you also enable it in case of reboots?",
+      "range": {
+        "startLine": 95,
+        "startChar": 12,
+        "endLine": 95,
+        "endChar": 42
+      },
+      "revId": "263c2ef2431803f8432c0d439289666afe9c921e",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7fec5510_95926abb",
+        "filename": "kuryr_heat_pike",
+        "patchSetId": 1
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1010914
+      },
+      "writtenOn": "2017-10-18T07:21:21Z",
+      "side": 1,
+      "message": "Have you tested this works? I remember having problems with kuryr when the openshift dnsmasq was enabled",
+      "range": {
+        "startLine": 139,
+        "startChar": 0,
+        "endLine": 139,
+        "endChar": 26
+      },
+      "revId": "263c2ef2431803f8432c0d439289666afe9c921e",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    }
+  ]
+}
