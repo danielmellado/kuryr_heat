@@ -119,9 +119,8 @@ resources:
             # Prepare OpenShift ansible deployment
             yum install -y epel-release
             yum install -y ansible git
-            git clone https://github.com/dulek/openshift-ansible /home/centos/openshift-ansible
+            git clone https://github.com/openshift/openshift-ansible /home/centos/openshift-ansible
             pushd /home/centos/openshift-ansible
-            git checkout containerized_kuryr_support
             popd
             chown centos:centos -R /home/centos/openshift-ansible
 
