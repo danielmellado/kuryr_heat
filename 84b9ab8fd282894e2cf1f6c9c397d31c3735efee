@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9d064bfe_785f44cb",
+        "filename": "kuryr_heat_pike",
+        "patchSetId": 1
+      },
+      "lineNbr": 179,
+      "author": {
+        "id": 1012534
+      },
+      "writtenOn": "2017-11-06T17:04:26Z",
+      "side": 1,
+      "message": "This will add the options to the inventory, but will fail to add them to the kuryr.conf as options there are more or less hardcoded (e.g. [1]). This sucks but more elaborate template would take a lot more time. Do you think we should write it for openshift-ansible?\n\n[1] https://github.com/openshift/openshift-ansible/pull/5574/files#diff-0ed7f4ad5111c3160b0425edf233fbf6R217",
+      "range": {
+        "startLine": 175,
+        "startChar": 0,
+        "endLine": 179,
+        "endChar": 40
+      },
+      "revId": "84b9ab8fd282894e2cf1f6c9c397d31c3735efee",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    }
+  ]
+}
