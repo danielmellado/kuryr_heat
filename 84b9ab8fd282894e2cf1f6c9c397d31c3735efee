@@ -1,0 +1,9 @@
+Code-Review+1: Michał Dulko <mdulko@redhat.com>
+Code-Review+2: Antoni Segura Puimedon <celebdor@gmail.com>
+Code-Review+2: Daniel Mellado <dmellado@redhat.com>
+Verified+1: Daniel Mellado <dmellado@redhat.com>
+Submitted-by: Daniel Mellado <dmellado@redhat.com>
+Submitted-at: Thu, 16 Nov 2017 04:00:10 -0500
+Reviewed-on: https://review.gerrithub.io/385905
+Project: danielmellado/kuryr_heat
+Branch: refs/heads/master
