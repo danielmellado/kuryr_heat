@@ -36,6 +36,22 @@ parameters:
   dns_domain:
     type: string
     description: search domain for the node
+  pod_network:
+    type: string
+    label: Pods Network
+    description: Neutron network for Pods
+  pod_subnet:
+    type: string
+    label: Pod Subnet
+    description: Neutron subnet for Pods
+  pod_access_sg:
+    type: string
+    label: Pod access sg
+    description: SG to access pod subnet
+  subports_per_pool:
+    type: number
+    label: Precreated subports
+    description: nymber of pre-created subports per pool
 
 resources:
   parent_port:
@@ -48,11 +64,37 @@ resources:
       fixed_ips:
         - subnet: { get_param: subnet }
 
+  subports:
+    type: OS::Heat::ResourceGroup
+    properties:
+      count: { get_param: subports_per_pool }
+      resource_def:
+        type: subports.yaml
+        properties:
+          network: { get_param: pod_network }
+          subnet: { get_param: pod_subnet}
+          pod_access_sg: { get_param: pod_access_sg }
+
+  segmentation:
+    type: OS::Kuryr::SegIds
+    properties:
+      number_of_vlan_ids: { get_param: subports_per_pool }
+
   trunk_port:
     type: OS::Neutron::Trunk
     properties:
       name: { get_param: name }
       port: { get_resource: parent_port }
+      sub_ports:
+        repeat:
+          for_each:
+            <%port%>: { get_attr: [subports, subport_id] }
+            <%vlan_id%>: { get_attr: [segmentation, vlan_ids] }
+          template:
+            port: <%port%>
+            segmentation_type: vlan
+            segmentation_id: <%vlan_id%>
+          permutations: false
 
   instance:
     type: OS::Nova::Server
