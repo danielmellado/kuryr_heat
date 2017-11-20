@@ -62,6 +62,10 @@ parameters:
     type: number
     description: Number of worker VMs
     default: 1
+  subports_per_pool:
+    type: number
+    description: Number of pre-created ports per pool
+    default: 5
 
 resources:
   network:
@@ -119,6 +123,9 @@ resources:
           subnet: { get_attr: [network, vm_subnet_id] }
           external_dns_server: { get_param: external_dns_server }
           dns_domain: { get_param: dns_domain }
+          pod_network: { get_attr: [network, pod_net_id] }
+          pod_subnet: { get_attr: [network, pod_subnet_id] }
+          subports_per_pool: { get_param: subports_per_pool }
 outputs:
   trunk_ports:
     value: { get_attr: [worker_nodes, trunk_port_id] }
