@@ -5,7 +5,7 @@ function sub_stack() {
     # create stack
     echo "Deploying the stack"
 
-    openstack stack create -e hot/parameters.yml -t hot/kuryr_heat_template.yml "$deployment"
+    openstack stack create -e hot/parameters.yaml -t hot/kuryr_heat_template.yaml "$deployment"
 
     sub_show "$deployment"
 }

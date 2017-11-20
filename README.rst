@@ -9,7 +9,7 @@ How to run
 ~~~~~~~~~~
 
 In order to run it, make sure that you have sourced your openrc file, edited
-hot/parameters.yml and then launch with:
+hot/parameters.yaml and then launch with:
 
 ./kuryr_heat stack
 

@@ -1,0 +1,25 @@
+heat_template_version: pike
+
+description: Template to create subports
+
+parameters:
+  network:
+    type: string
+    label: Subport Network
+  subnet:
+    type: string
+    label: Subport Subnet
+
+resources:
+  subports:
+    type: OS::Neutron::Port
+    properties:
+      network: { get_param: network }
+      security_groups:
+        - default
+      fixed_ips:
+        - subnet: { get_param: subnet }
+
+outputs:
+  subport_id:
+    value: { get_resource: subports }

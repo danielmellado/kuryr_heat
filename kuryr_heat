@@ -5,7 +5,7 @@ function sub_stack() {
     # create stack
     echo "Deploying the stack"
 
-    openstack stack create -e hot/parameters.yml -t hot/kuryr_heat_template.yml "$deployment"
+    openstack stack create -e hot/parameters.yaml -t hot/kuryr_heat_template.yaml "$deployment"
 
     # wait for the hook to stop stack deployment
     echo "Waiting for the hook"
@@ -72,7 +72,7 @@ function sub_show() {
     local hostname
     local address
     local fqdn
-    
+
     deployment=${1:-heat-kuryr-k8s}
     dns_output=( $(openstack stack output show "${deployment}" trunk_dns -f json  | jq -r '.output_value' | jq -c '.[] | .[]') )
     echo "VM subnet:      $(openstack stack output show "${deployment}" vm_subnet -f json | jq -r '.output_value')"
