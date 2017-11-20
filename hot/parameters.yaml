@@ -15,6 +15,9 @@ parameters:
   dns_domain: kuryrscale
   master_num: 1
   worker_num: 3
+  subports_per_pool: 5
 
 resource_registry:
   OS::Kuryr::PodInVMNetworking: networking_deployment.yaml
+  OS::Kuryr::SegIds: seg_ids.yaml
+  OS::Kuryr::Subports: subports.yaml

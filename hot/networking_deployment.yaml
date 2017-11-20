@@ -217,6 +217,8 @@ outputs:
     value: { get_resource: vm_net }
   vm_subnet_id:
     value: { get_resource: vm_subnet }
+  pod_net_id:
+    value: { get_resource: pod_net }
   pod_subnet_id:
     value: { get_resource: pod_subnet }
   service_subnet_id:
